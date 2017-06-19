@@ -1,0 +1,29 @@
+{{range $.posts}}
+	<div class="each-post" >
+		<div class="title">
+			<a href="{{$.postUrl}}/{{.UrlTitle}}" title="全文">
+				{{.Title}}
+			</a>
+		</div>
+		
+		<div class="created-time">
+			{{if .Tags}} 
+			    <i class="fa fa-bookmark-o" style="color:#DA3E3E"></i>
+				{{blogTags $ .Tags}}
+				&nbsp;&nbsp;
+			{{end}}
+			发布于 <span id="postmark">{{dateFormat .PublicTime "2006-01-02"}} </span>
+			&nbsp;&nbsp;{{.ReadNum}}人围观&nbsp;&nbsp;&nbsp;{{.CommentNum}}条评论
+		</div>
+		<div class="desc">
+			{{.Abstract | raw}}
+		</div>
+		<span id="moreContainer" class="button raised bg-{{$.themeInfo.Color}}-{{$.themeInfo.ColorStrength}}" style="margin-top:8px;">
+		    <a id="readmore" style="color:#fff;letter-spacing:1px;" href="{{$.postUrl}}/{{.UrlTitle}}">查看更多</a>
+		 </span>
+	</div>
+{{else}}
+<div class="each-post">
+    无
+</div>
+{{end}}

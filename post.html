@@ -1,0 +1,98 @@
+{{template "header.html" .}}
+<div class="toolbar header bg-{{$.themeInfo.Color}}-{{$.themeInfo.ColorStrength}} color-white">
+	<button class="icon-button" onclick="SideMenu.toggle(document.querySelector('#navigation-sidemenu'));"><i class="fa fa-bars"></i></button>
+	<label class="toolbar-label">文章 - {{.post.Title}}</label>
+	<span class="float-right" id="switch-container">
+		<div class="switch">
+			<input type="checkbox" id="dark-theme-switch" onchange="Theme.setTheme(this.checked ? 'dark' : 'light')"/>
+			<label for="dark-theme-switch"></label>
+			<label class="form-control-label">Dark</label>
+		</div>
+	</span>
+</div>
+<div id="postsContainer"> 
+	<div id="posts">
+		<div class="each-post">
+			<div class="title">
+				{{.post.Title}}
+			</div>
+			<div class="created-time">
+    			{{if $.post.Tags}} 
+    			    <i class="fa fa-bookmark-o" style="color:#DA3E3E"></i>
+    				{{blogTags $ $.post.Tags}}&nbsp;&nbsp;
+    			{{end}}
+    			发布于 <span id="postmark">{{dateFormat $.post.PublicTime "2006-01-02"}} </span>
+    			&nbsp;&nbsp;{{$.post.ReadNum}}人围观&nbsp;&nbsp;{{$.post.CommentNum}}条评论
+			</div>
+			<!-- 仅为移动端 -->
+			<div class="mobile-created-time">
+				{{if $.post.Tags}} 
+    			    <i class="fa fa-bookmark-o" style="color:#DA3E3E"></i>
+    				{{blogTags $ $.post.Tags}}&nbsp;&nbsp;
+    			{{end}}
+    			发表于 <span id="postmark">{{dateFormat $.post.PublicTime "2006-01-02"}} </span>
+    			&nbsp;&nbsp;{{$.post.ReadNum}}人围观&nbsp;&nbsp;{{$.post.CommentNum}}条评论
+			</div>
+			<div id="blogNavContent" style="border-left:4px solid rgba(77,182,172,0.6)"></div>
+			<div class="desc" id="content">
+				{{if $.post.IsMarkdown }}
+					<div id="markdownContent" style="display: none">
+						<textarea>{{$.post.Content | raw}}</textarea>
+					</div>
+					<div style="padding: 20px; text-align: center">
+						<img src="{{$.themeBaseUrl}}/images/loading-32.gif" />
+					</div>
+				{{else}}
+					{{$.post.Content | raw}}
+				{{end}}
+			</div>
+		    <div class="pre-next-post" style="border-top:1px solid #f1f2f3;padding-top:10px;margin-top:20px;">
+		        <p>上一篇: {{if $.prePost}}<a href="{{$.postUrl}}/{{$.prePost.UrlTitle}}">{{$.prePost.Title}}</a>{{else}}已经是第一篇啦{{end}}</p>
+                <p>下一篇: {{if $.nextPost}}<a href="{{$.postUrl}}/{{$.nextPost.UrlTitle}}">{{$.nextPost.Title}}</a>{{else}}已经是最后一篇啦{{end}}</p>
+			</div>
+			{{template "share_comment.html" $}}
+		</div>
+	</div>
+	
+</div>
+</div>
+{{template "footer_js.html" $}}
+{{template "highlight.html" $}}
+<script>
+var siteUrl = "{{$.siteUrl}}"; // common.js需要
+// 以下 share_comment.js需要
+var blogInfo={UserId: "{{$.blogInfo.UserId}}", OpenComment: {{$.blogInfo.OpenComment}}, CommentType: "{{$.blogInfo.CommentType}}"}; 
+var noteId = "{{$.post.NoteId}}"; // 
+var preLikeNum = +"{{$.post.LikeNum}}";
+var commentNum = +"{{$.post.CommentNum}}";
+</script>
+<!-- 一些公用的js -->
+<script src="{{$.siteUrl}}/public/blog/js/jsrender.js"></script>
+<script src="{{$.siteUrl}}/public/blog/js/jquery-cookie-min.js"></script>
+<script src="{{$.siteUrl}}/public/blog/js/bootstrap-dialog.min.js"></script>
+<script src="{{$.siteUrl}}/public/blog/js/jquery.qrcode.min.js"></script>
+<script src="{{$.themeBaseUrl}}/common.js"></script>
+<script src="{{$.themeBaseUrl}}/share_comments.js"></script>
+<!-- markdown 调用markdown来解析得到html-->
+{{if $.post.IsMarkdown }}
+    <script src="/public/libs/md2html/md2html.js"></script>
+    <script>
+    var content = $.trim($("#markdownContent textarea").val());
+    md2Html(content, $("#content"), function(html) {
+        $("pre").addClass("prettyprint linenums");
+        prettyPrint();
+        initNav();
+        weixin();
+    });
+    </script>
+<!-- 不是markdown -->
+{{else}}
+    <script>
+    $(function() {
+    	initNav();
+    	weixin();
+    });
+    </script>
+{{end}}
+</body>
+</html>
